@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>عيد ميلاد سعيد - الحاجة نادرة النصارى</title>
+    
+    <meta property="og:title" content="🎉 عيد ميلاد سعيد الحاجة نادرة 🎉" />
+    <meta property="og:description" content="اضغط هنا لمشاهدة التهنئة والمفاجأة الخاصة بمناسبة عيد ميلاد ست الكل ❤️" />
+    <meta property="og:image" content="img/img001.jpg" />
+    <meta property="og:type" content="website" />
+
+    <link href="https://fonts.googleapis.com/css2?family=Aref+Ruqaa:wght@700&family=Cairo:wght@400;700;900&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #ff007f;
+            --gold: #ffd700;
+            --bg-gradient: linear-gradient(135deg, #2b003b, #4a004a, #1a0024);
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            background: var(--bg-gradient);
+            background-size: 200% 200%;
+            animation: gradientBG 15s ease infinite;
+            font-family: 'Cairo', sans-serif;
+            color: white;
+            overflow-x: hidden;
+            text-align: center;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        header {
+            margin-top: 3vh;
+            position: relative;
+            z-index: 10;
+            padding: 0 10px;
+        }
+
+        h1 {
+            font-family: 'Aref Ruqaa', serif;
+            font-size: 3.5rem;
+            color: var(--gold);
+            text-shadow: 0 0 15px var(--gold);
+            margin: 5px 0;
+            line-height: 1.2;
+        }
+
+        h2 {
+            font-size: 1.5rem;
+            color: #fff;
+            margin: 0;
+            text-shadow: 0 2px 5px rgba(0,0,0,0.5);
+        }
+
+        .audio-btn {
+            background: var(--gold);
+            color: #000;
+            border: none;
+            padding: 12px 25px;
+            font-size: 1.2rem;
+            font-family: 'Cairo', sans-serif;
+            font-weight: bold;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.5);
+            transition: transform 0.2s ease;
+            margin: 15px 0;
+            max-width: 90%;
+            white-space: nowrap;
+        }
+
+        .audio-btn:active {
+            transform: scale(0.95);
+        }
+
+        /* =========================================
+           معرض الصور 
+           ========================================= */
+        .gallery-container {
+            margin: 60px auto;
+            perspective: 1500px; /* عمق الرؤية */
+            width: 100%;
+            height: 35vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 5;
+            position: relative;
+        }
+
+        .carousel {
+            /* حجم الصورة الافتراضي للديسكتوب */
+            width: 130px;
+            height: 190px;
+            position: relative;
+            transform-style: preserve-3d;
+            animation: rotateGallery 70s infinite linear; /* تبطيء الحركة لأن عدد الصور كبير */
+            will-change: transform;
+        }
+
+        .carousel-item {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 10px;
+            border: 3px solid var(--gold);
+            background: #000;
+            backface-visibility: hidden; 
+            -webkit-backface-visibility: hidden;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+        }
+
+        .carousel-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 7px;
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            pointer-events: none;
+        }
+
+        /* تأثير التكبير (Zoom) عند الضغط */
+        .carousel-item.zoomed {
+            z-index: 100;
+            border-color: #fff;
+        }
+
+        .carousel-item.zoomed img {
+            transform: scale(2.2); /* تكبير قوي للصور */
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.9);
+            border: 3px solid white;
+        }
+
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7);
+            z-index: 4;
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        .overlay.active {
+            display: block;
+            opacity: 1;
+        }
+
+        @keyframes rotateGallery {
+            from { transform: rotateY(0deg); }
+            to { transform: rotateY(360deg); }
+        }
+
+        .message-box {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(5px);
+            border: 2px solid var(--gold);
+            padding: 20px;
+            border-radius: 15px;
+            width: 85%;
+            max-width: 600px;
+            margin: 60px auto 30px;
+            font-size: 1.3rem;
+            line-height: 1.6;
+        }
+
+        .balloon {
+            position: absolute;
+            bottom: -100px;
+            width: 35px;
+            height: 45px;
+            border-radius: 50%;
+            animation: floatUp 12s infinite linear;
+            opacity: 0.7;
+            z-index: 1;
+            will-change: transform;
+        }
+        .balloon::before {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 12px;
+            width: 10px;
+            height: 10px;
+            background: inherit;
+            clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+        }
+
+        @keyframes floatUp {
+            0% { transform: translate3d(0, 0, 0) rotate(0deg); }
+            100% { transform: translate3d(0, -120vh, 0) rotate(15deg); }
+        }
+
+        /* =========================================
+           شاشات الموبايل المتجاوبة
+           ========================================= */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.2rem; }
+            h2 { font-size: 1.1rem; }
+            header { margin-top: 2vh; }
+            
+            .gallery-container {
+                height: 45vh;
+                margin: 40px auto;
+                perspective: 1000px; /* جعل المنظور أعمق لتناسب الصور الكثيرة */
+            }
+            .carousel {
+                width: 90px; /* تصغير العرض ليناسب الشاشة مع كثرة الصور */
+                height: 140px;
+            }
+
+            .carousel-item.zoomed img {
+                transform: scale(2.8); /* تكبير ضخم جداً على الموبايل لتملأ الشاشة */
+            }
+
+            .message-box {
+                margin-top: 30px;
+                font-size: 1.1rem;
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="overlay" id="overlay"></div>
+
+    <audio id="birthdayAudio" loop>
+        <source src="audio/song001.mp3" type="audio/mpeg">
+    </audio>
+
+    <header>
+        <h2>كل عام وأنتِ نور حياتنا</h2>
+        <h1>الحاجة نادرة النصارى</h1>
+        <button class="audio-btn" id="playBtn" onclick="toggleAudio()">🎶 تشغيل الموسيقى 🎶</button>
+    </header>
+
+    <div class="gallery-container">
+        <div class="carousel" id="carousel">
+            <!-- الـ 25 صورة -->
+            <div class="carousel-item"><img src="img/img001.jpg" alt="صورة"></div>
+            <div class="carousel-item"><img src="img/img002.jpg" alt="صورة"></div>
+            <div class="carousel-item"><img src="img/img003.jpg" alt="صورة"></div>
+            <div class="carousel-item"><img src="img/img004.jpg" alt="صورة"></div>
+            <div class="carousel-item"><img src="img/img005.jpg" alt="صورة"></div>
+            <div class="carousel-item"><img src="img/img006.jpg" alt="صورة"></div>
+            <div class="carousel-item"><img src="img/img007.jpg" alt="صورة"></div>
+            <div class="carousel-item"><img src="img/img008.jpg" alt="صورة"></div>
+            <div class="carousel-item"><img src="img/img009.jpg" alt="صورة"></div>
+            <div class="carousel-item"><img src="img/img010.jpg" alt="صورة"></div>
+            <div class="carousel-item"><img src="img/img011.jpg" alt="صورة"></div>
+            <div class="carousel-item"><img src="img/img012.jpg" alt="صورة"></div>
+            <div class="carousel-item"><img src="img/img013.jpg" alt="صورة"></div>
+            <div class="carousel-item"><img src="img/img014.jpg" alt="صورة"></div>
+            <div class="carousel-item"><img src="img/img015.jpg" alt="صورة"></div>
+            <div class="carousel-item"><img src="img/img016.jpg" alt="صورة"></div>
+            <div class="carousel-item"><img src="img/img017.jpg" alt="صورة"></div>
+            <div class="carousel-item"><img src="img/img018.jpg" alt="صورة"></div>
+            <div class="carousel-item"><img src="img/img019.jpg" alt="صورة"></div>
+            <div class="carousel-item"><img src="img/img020.jpg" alt="صورة"></div>
+            <div class="carousel-item"><img src="img/img021.jpg" alt="صورة"></div>
+            <div class="carousel-item"><img src="img/img022.jpg" alt="صورة"></div>
+            <div class="carousel-item"><img src="img/img023.jpg" alt="صورة"></div>
+            <div class="carousel-item"><img src="img/img024.jpg" alt="صورة"></div>
+            <div class="carousel-item"><img src="img/img025.jpg" alt="صورة"></div>
+        </div>
+    </div>
+
+    <div class="message-box">
+        أطال الله في عمرك يا غالية، ورزقك الصحة والعافية والسعادة في الدارين. <br>
+        أنتِ البركة ونور البيت، كل عام وأنتِ تاج على رؤوسنا يا ست الكل. ❤️🌹
+    </div>
+
+    <script>
+        // --- 1. بناء دائرة الصور برمجياً (Dynamic 3D Carousel) ---
+        function setupCarousel() {
+            const carousel = document.getElementById('carousel');
+            const items = document.querySelectorAll('.carousel-item');
+            const itemCount = items.length; // 25 صورة
+            const angle = 360 / itemCount; // حساب الزاوية بدقة
+            
+            // حساب المسافة المركزية (Radius) بناءً على عرض الصورة في الموبايل والكمبيوتر
+            const itemWidth = carousel.offsetWidth; 
+            // معادلة رياضية لحساب قطر الدائرة بناءً على عدد الصور وحجمها
+            const radius = Math.round( (itemWidth / 2) / Math.tan(Math.PI / itemCount) ) + 20; 
+
+            items.forEach((item, index) => {
+                item.style.transform = `rotateY(${index * angle}deg) translateZ(${radius}px)`;
+            });
+        }
+
+        // تشغيل بناء المعرض عند فتح الموقع، وعند تدوير شاشة الموبايل
+        setupCarousel();
+        window.addEventListener('resize', setupCarousel);
+
+        // --- 2. برمجة تكبير الصور (Zoom) عند الضغط ---
+        const items = document.querySelectorAll('.carousel-item');
+        const carousel = document.getElementById('carousel');
+        const overlay = document.getElementById('overlay');
+
+        function closeAllImages() {
+            items.forEach(i => i.classList.remove('zoomed'));
+            overlay.classList.remove('active');
+            carousel.style.animationPlayState = 'running'; // إعادة الدوران
+        }
+
+        items.forEach(item => {
+            item.addEventListener('click', function(e) {
+                e.stopPropagation(); 
+                if (this.classList.contains('zoomed')) {
+                    closeAllImages();
+                } else {
+                    closeAllImages();
+                    this.classList.add('zoomed');
+                    overlay.classList.add('active');
+                    carousel.style.animationPlayState = 'paused'; // إيقاف الدوران للرؤية بوضوح
+                }
+            });
+        });
+
+        document.body.addEventListener('click', function(e) {
+            if (!e.target.closest('.carousel-item')) {
+                closeAllImages();
+            }
+        });
+
+
+        // --- 3. البالونات ---
+        const isMobile = window.innerWidth <= 768;
+        const balloonCount = isMobile ? 6 : 12; 
+        const colors = ['#ff4b4b', '#4bafff', '#ffcc00', '#ff4be6', '#4bff88'];
+
+        for(let i=0; i < balloonCount; i++) {
+            let balloon = document.createElement('div');
+            balloon.className = 'balloon';
+            balloon.style.background = colors[Math.floor(Math.random() * colors.length)];
+            balloon.style.left = (Math.random() * 90) + 'vw'; 
+            balloon.style.animationDuration = (Math.random() * 6 + 8) + 's';
+            balloon.style.animationDelay = Math.random() * 5 + 's';
+            document.body.appendChild(balloon);
+        }
+
+        // --- 4. تشغيل الصوت والقصاصات ---
+        let isPlaying = false;
+        const audio = document.getElementById('birthdayAudio');
+        const playBtn = document.getElementById('playBtn');
+
+        function toggleAudio() {
+            if (isPlaying) {
+                audio.pause();
+                playBtn.innerHTML = "🎶 تشغيل الموسيقى 🎶";
+            } else {
+                audio.play();
+                playBtn.innerHTML = "⏸ إيقاف الموسيقى";
+                fireConfetti();
+            }
+            isPlaying = !isPlaying;
+        }
+
+        function fireConfetti() {
+            var duration = 3 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            function randomInRange(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+                var particleCount = isMobile ? 15 : 40 * (timeLeft / duration);
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.1, 0.3), y: Math.random() - 0.2 } }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInRange(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
+        }
+
+        window.onload = function() {
+            setTimeout(fireConfetti, 500);
+        }
+    </script>
+</body>
+</html>

@@ -2,7 +2,8 @@
 <html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>عيد ميلاد سعيد - الحاجة نادرة النصارى</title>
     
     <meta property="og:title" content="🎉 عيد ميلاد سعيد الحاجة نادرة 🎉" />
@@ -14,21 +15,33 @@
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
 
     <style>
+        /* إعادة ضبط الصندوق لمنع أي تمدد مخفي */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
         :root {
             --primary-color: #ff007f;
             --gold: #ffd700;
             --bg-gradient: linear-gradient(135deg, #2b003b, #4a004a, #1a0024);
         }
 
+        /* الإغلاق التام لأي انزياح أفقي (السبب الرئيسي لخراب الشاشة عندك) */
+        html, body {
+            width: 100vw;
+            max-width: 100%;
+            overflow-x: hidden !important; 
+            position: relative;
+        }
+
         body {
-            margin: 0;
-            padding: 0;
             background: var(--bg-gradient);
             background-size: 200% 200%;
             animation: gradientBG 15s ease infinite;
             font-family: 'Cairo', sans-serif;
             color: white;
-            overflow-x: hidden;
             text-align: center;
         }
 
@@ -38,11 +51,23 @@
             100% { background-position: 0% 50%; }
         }
 
+        /* غلاف حماية إضافي لمنع العناصر الثلاثية الأبعاد من كسر الشاشة */
+        .app-wrapper {
+            width: 100%;
+            min-height: 100vh;
+            overflow: hidden;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
         header {
             margin-top: 3vh;
             position: relative;
             z-index: 10;
-            padding: 0 10px;
+            width: 100%;
+            padding: 0 15px;
         }
 
         h1 {
@@ -73,21 +98,16 @@
             cursor: pointer;
             box-shadow: 0 4px 10px rgba(0,0,0,0.5);
             transition: transform 0.2s ease;
-            margin: 15px 0;
-            max-width: 90%;
-            white-space: nowrap;
-        }
-
-        .audio-btn:active {
-            transform: scale(0.95);
+            margin: 15px auto;
+            display: block;
         }
 
         /* =========================================
-           معرض الصور ثلاثي الأبعاد
+           معرض الصور 3D (تم حل مشكلة الـ RTL هنا)
            ========================================= */
         .gallery-container {
-            margin: 60px auto;
-            perspective: 1500px; 
+            margin: 50px auto;
+            perspective: 1000px; 
             width: 100%;
             height: 35vh;
             display: flex;
@@ -95,7 +115,8 @@
             align-items: center;
             z-index: 5;
             position: relative;
-            overflow: visible; /* منع قص الصور ثلاثية الأبعاد */
+            /* مهم جداً: إجبار المعرض على اتجاه اليسار لليمين لمنع المتصفح من عكس الإحداثيات الـ 3D */
+            direction: ltr; 
         }
 
         .carousel {
@@ -104,11 +125,13 @@
             position: relative;
             transform-style: preserve-3d;
             animation: rotateGallery 70s infinite linear;
-            will-change: transform;
+            transform-origin: center center; /* ضمان الدوران حول المركز */
         }
 
         .carousel-item {
             position: absolute;
+            top: 0;
+            left: 0;
             width: 100%;
             height: 100%;
             border-radius: 10px;
@@ -118,7 +141,6 @@
             -webkit-backface-visibility: hidden;
             cursor: pointer;
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
-            transition: border-color 0.3s ease;
         }
 
         .carousel-item img {
@@ -127,7 +149,7 @@
             object-fit: cover;
             border-radius: 7px;
             pointer-events: none;
-            display: block; /* منع الفراغات السفلية للصور */
+            display: block;
         }
 
         @keyframes rotateGallery {
@@ -136,14 +158,12 @@
         }
 
         /* =========================================
-           نظام Lightbox الجديد لعرض الصور بدون تشوه
+           نظام Lightbox לעرض الصور بدون تشوه
            ========================================= */
         .lightbox {
             position: fixed;
             top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0, 0, 0, 0.85);
-            backdrop-filter: blur(5px);
-            -webkit-backdrop-filter: blur(5px);
+            background: rgba(0, 0, 0, 0.9);
             z-index: 9999;
             display: flex;
             justify-content: center;
@@ -151,6 +171,7 @@
             opacity: 0;
             visibility: hidden;
             transition: all 0.3s ease;
+            direction: rtl; /* إعادة الاتجاه للوضع الطبيعي في الصندوق */
         }
 
         .lightbox.active {
@@ -172,8 +193,6 @@
             transform: scale(1);
         }
 
-        /* ========================================= */
-
         .message-box {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(5px);
@@ -181,15 +200,16 @@
             border: 2px solid var(--gold);
             padding: 20px;
             border-radius: 15px;
-            width: 85%;
+            width: 90%;
             max-width: 600px;
-            margin: 60px auto 30px;
+            margin: 40px auto 30px;
             font-size: 1.3rem;
             line-height: 1.6;
+            direction: rtl;
         }
 
         .balloon {
-            position: fixed; /* استخدام fixed بدل absolute لتجنب تمدد الصفحة */
+            position: fixed;
             bottom: -100px;
             width: 35px;
             height: 45px;
@@ -197,7 +217,6 @@
             animation: floatUp 12s infinite linear;
             opacity: 0.7;
             z-index: 1;
-            will-change: transform;
         }
         .balloon::before {
             content: '';
@@ -215,23 +234,21 @@
             100% { transform: translate3d(0, -120vh, 0) rotate(15deg); }
         }
 
+        /* مقاسات الموبايل */
         @media (max-width: 768px) {
             h1 { font-size: 2.2rem; }
             h2 { font-size: 1.1rem; }
-            header { margin-top: 2vh; }
             
             .gallery-container {
-                height: 45vh;
-                margin: 40px auto;
-                perspective: 1200px;
+                height: 40vh;
+                margin: 30px auto;
             }
             .carousel {
-                width: 90px;
-                height: 140px;
+                width: 85px; /* مقاس ثابت للموبايل */
+                height: 130px;
             }
-
             .message-box {
-                margin-top: 30px;
+                margin-top: 20px;
                 font-size: 1.1rem;
                 padding: 15px;
             }
@@ -240,7 +257,6 @@
 </head>
 <body>
 
-    <!-- نافذة عرض الصور المستقلة (Lightbox) -->
     <div class="lightbox" id="lightbox">
         <img id="lightbox-img" src="" alt="صورة مكبرة">
     </div>
@@ -249,66 +265,71 @@
         <source src="audio/song001.mp3" type="audio/mpeg">
     </audio>
 
-    <header>
-        <h2>كل عام وأنتِ نور حياتنا</h2>
-        <h1>الحاجة نادرة النصارى</h1>
-        <button class="audio-btn" id="playBtn" onclick="toggleAudio()">🎶 تشغيل الموسيقى 🎶</button>
-    </header>
+    <div class="app-wrapper">
+        <header>
+            <h2>كل عام وأنتِ نور حياتنا</h2>
+            <h1>الحاجة نادرة النصارى</h1>
+            <button class="audio-btn" id="playBtn" onclick="toggleAudio()">🎶 تشغيل لموسيقى</button>
+        </header>
 
-    <div class="gallery-container">
-        <div class="carousel" id="carousel">
-            <!-- 25 صورة -->
-            <div class="carousel-item"><img src="img/img001.jpg" alt="صورة"></div>
-            <div class="carousel-item"><img src="img/img002.jpg" alt="صورة"></div>
-            <div class="carousel-item"><img src="img/img003.jpg" alt="صورة"></div>
-            <div class="carousel-item"><img src="img/img004.jpg" alt="صورة"></div>
-            <div class="carousel-item"><img src="img/img005.jpg" alt="صورة"></div>
-            <div class="carousel-item"><img src="img/img006.jpg" alt="صورة"></div>
-            <div class="carousel-item"><img src="img/img007.jpg" alt="صورة"></div>
-            <div class="carousel-item"><img src="img/img008.jpg" alt="صورة"></div>
-            <div class="carousel-item"><img src="img/img009.jpg" alt="صورة"></div>
-            <div class="carousel-item"><img src="img/img010.jpg" alt="صورة"></div>
-            <div class="carousel-item"><img src="img/img011.jpg" alt="صورة"></div>
-            <div class="carousel-item"><img src="img/img012.jpg" alt="صورة"></div>
-            <div class="carousel-item"><img src="img/img013.jpg" alt="صورة"></div>
-            <div class="carousel-item"><img src="img/img014.jpg" alt="صورة"></div>
-            <div class="carousel-item"><img src="img/img015.jpg" alt="صورة"></div>
-            <div class="carousel-item"><img src="img/img016.jpg" alt="صورة"></div>
-            <div class="carousel-item"><img src="img/img017.jpg" alt="صورة"></div>
-            <div class="carousel-item"><img src="img/img018.jpg" alt="صورة"></div>
-            <div class="carousel-item"><img src="img/img019.jpg" alt="صورة"></div>
-            <div class="carousel-item"><img src="img/img020.jpg" alt="صورة"></div>
-            <div class="carousel-item"><img src="img/img021.jpg" alt="صورة"></div>
-            <div class="carousel-item"><img src="img/img022.jpg" alt="صورة"></div>
-            <div class="carousel-item"><img src="img/img023.jpg" alt="صورة"></div>
-            <div class="carousel-item"><img src="img/img024.jpg" alt="صورة"></div>
-            <div class="carousel-item"><img src="img/img025.jpg" alt="صورة"></div>
+        <div class="gallery-container">
+            <div class="carousel" id="carousel">
+                <!-- 25 صورة -->
+                <div class="carousel-item"><img src="img/img001.jpg" alt=""></div>
+                <div class="carousel-item"><img src="img/img002.jpg" alt=""></div>
+                <div class="carousel-item"><img src="img/img003.jpg" alt=""></div>
+                <div class="carousel-item"><img src="img/img004.jpg" alt=""></div>
+                <div class="carousel-item"><img src="img/img005.jpg" alt=""></div>
+                <div class="carousel-item"><img src="img/img006.jpg" alt=""></div>
+                <div class="carousel-item"><img src="img/img007.jpg" alt=""></div>
+                <div class="carousel-item"><img src="img/img008.jpg" alt=""></div>
+                <div class="carousel-item"><img src="img/img009.jpg" alt=""></div>
+                <div class="carousel-item"><img src="img/img010.jpg" alt=""></div>
+                <div class="carousel-item"><img src="img/img011.jpg" alt=""></div>
+                <div class="carousel-item"><img src="img/img012.jpg" alt=""></div>
+                <div class="carousel-item"><img src="img/img013.jpg" alt=""></div>
+                <div class="carousel-item"><img src="img/img014.jpg" alt=""></div>
+                <div class="carousel-item"><img src="img/img015.jpg" alt=""></div>
+                <div class="carousel-item"><img src="img/img016.jpg" alt=""></div>
+                <div class="carousel-item"><img src="img/img017.jpg" alt=""></div>
+                <div class="carousel-item"><img src="img/img018.jpg" alt=""></div>
+                <div class="carousel-item"><img src="img/img019.jpg" alt=""></div>
+                <div class="carousel-item"><img src="img/img020.jpg" alt=""></div>
+                <div class="carousel-item"><img src="img/img021.jpg" alt=""></div>
+                <div class="carousel-item"><img src="img/img022.jpg" alt=""></div>
+                <div class="carousel-item"><img src="img/img023.jpg" alt=""></div>
+                <div class="carousel-item"><img src="img/img024.jpg" alt=""></div>
+                <div class="carousel-item"><img src="img/img025.jpg" alt=""></div>
+            </div>
+        </div>
+
+        <div class="message-box">
+            أطال الله في عمرك يا غالية، ورزقك الصحة والعافية والسعادة في الدارين. <br>
+            أنتِ البركة ونور البيت، كل عام وأنتِ تاج على رؤوسنا يا ست الكل. ❤️🌹
         </div>
     </div>
 
-    <div class="message-box">
-        أطال الله في عمرك يا غالية، ورزقك الصحة والعافية والسعادة في الدارين. <br>
-        أنتِ البركة ونور البيت، كل عام وأنتِ تاج على رؤوسنا يا ست الكل. ❤️🌹
-    </div>
-
     <script>
-        // --- 1. بناء دائرة الصور (مؤجل حتى يكتمل تحميل الصفحة لمنع الأخطاء) ---
+        // --- 1. بناء دائرة الصور (حسابات قاطعة لا تعتمد على تأخير السيرفر) ---
         function setupCarousel() {
-            const carousel = document.getElementById('carousel');
             const items = document.querySelectorAll('.carousel-item');
             const itemCount = items.length; 
             const angle = 360 / itemCount; 
             
-            // إضافة عرض احتياطي في حال تأخر السيرفر في جلب حجم العنصر
-            const itemWidth = carousel.offsetWidth || (window.innerWidth <= 768 ? 90 : 130); 
-            const radius = Math.round( (itemWidth / 2) / Math.tan(Math.PI / itemCount) ) + 20; 
+            // تحديد الحجم بناءً على نوع الجهاز مباشرة بدل انتظار قراءة الـ CSS
+            const isMobile = window.innerWidth <= 768;
+            const itemWidth = isMobile ? 85 : 130; 
+            
+            // معادلة رياضية ثابتة تحسب القطر بدقة تامة + إضافة مساحة 30 بكسل كأمان
+            const radius = Math.round((itemWidth / 2) / Math.tan(Math.PI / itemCount)) + (isMobile ? 30 : 40); 
 
             items.forEach((item, index) => {
+                // استخدام translateZ لدفع الصور للأمام في مساحة 3D
                 item.style.transform = `rotateY(${index * angle}deg) translateZ(${radius}px)`;
             });
         }
 
-        // --- 2. نظام الـ Lightbox المحدث لعرض الصور ---
+        // --- 2. نظام الـ Lightbox ---
         const items = document.querySelectorAll('.carousel-item');
         const carousel = document.getElementById('carousel');
         const lightbox = document.getElementById('lightbox');
@@ -317,35 +338,33 @@
         items.forEach(item => {
             item.addEventListener('click', function(e) {
                 e.stopPropagation(); 
-                // أخذ مصدر الصورة من العنصر المضغوط
                 const imgSrc = this.querySelector('img').src;
                 lightboxImg.src = imgSrc;
                 lightbox.classList.add('active');
-                carousel.style.animationPlayState = 'paused'; // إيقاف الدوران
+                carousel.style.animationPlayState = 'paused'; 
             });
         });
 
-        // إغلاق الصورة عند الضغط في أي مكان
         lightbox.addEventListener('click', function() {
             lightbox.classList.remove('active');
-            carousel.style.animationPlayState = 'running'; // استكمال الدوران
+            carousel.style.animationPlayState = 'running'; 
         });
-
 
         // --- 3. البالونات ---
         function createBalloons() {
             const isMobile = window.innerWidth <= 768;
-            const balloonCount = isMobile ? 6 : 12; 
+            const balloonCount = isMobile ? 5 : 10; 
             const colors = ['#ff4b4b', '#4bafff', '#ffcc00', '#ff4be6', '#4bff88'];
 
             for(let i=0; i < balloonCount; i++) {
                 let balloon = document.createElement('div');
                 balloon.className = 'balloon';
                 balloon.style.background = colors[Math.floor(Math.random() * colors.length)];
-                balloon.style.left = (Math.random() * 90) + 'vw'; 
+                // تحديد النطاق لمنع خروج البالونات عن الشاشة
+                balloon.style.left = Math.floor(Math.random() * 85) + 5 + 'vw'; 
                 balloon.style.animationDuration = (Math.random() * 6 + 8) + 's';
                 balloon.style.animationDelay = Math.random() * 5 + 's';
-                document.body.appendChild(balloon);
+                document.querySelector('.app-wrapper').appendChild(balloon);
             }
         }
 
@@ -387,15 +406,16 @@
             }, 250);
         }
 
-        // --- 5. تشغيل الأكواد "بعد" تحميل كامل الصفحة لتجنب الأخطاء على السيرفر ---
+        // تشغيل الأساسيات بمجرد قراءة الـ DOM
+        setupCarousel();
+        createBalloons();
+        
         window.addEventListener('load', function() {
-            setupCarousel();
-            createBalloons();
             setTimeout(fireConfetti, 500);
         });
 
-        // إعادة ضبط المقاسات عند تدوير شاشة الموبايل
+        // تحديث التصميم عند تدوير الموبايل
         window.addEventListener('resize', setupCarousel);
     </script>
 </body>
-</html>
+    </html>

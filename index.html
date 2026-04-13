@@ -83,11 +83,11 @@
         }
 
         /* =========================================
-           معرض الصور 
+           معرض الصور ثلاثي الأبعاد
            ========================================= */
         .gallery-container {
             margin: 60px auto;
-            perspective: 1500px; /* عمق الرؤية */
+            perspective: 1500px; 
             width: 100%;
             height: 35vh;
             display: flex;
@@ -95,15 +95,15 @@
             align-items: center;
             z-index: 5;
             position: relative;
+            overflow: visible; /* منع قص الصور ثلاثية الأبعاد */
         }
 
         .carousel {
-            /* حجم الصورة الافتراضي للديسكتوب */
             width: 130px;
             height: 190px;
             position: relative;
             transform-style: preserve-3d;
-            animation: rotateGallery 70s infinite linear; /* تبطيء الحركة لأن عدد الصور كبير */
+            animation: rotateGallery 70s infinite linear;
             will-change: transform;
         }
 
@@ -118,6 +118,7 @@
             -webkit-backface-visibility: hidden;
             cursor: pointer;
             box-shadow: 0 0 15px rgba(255, 215, 0, 0.4);
+            transition: border-color 0.3s ease;
         }
 
         .carousel-item img {
@@ -125,34 +126,8 @@
             height: 100%;
             object-fit: cover;
             border-radius: 7px;
-            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
             pointer-events: none;
-        }
-
-        /* تأثير التكبير (Zoom) عند الضغط */
-        .carousel-item.zoomed {
-            z-index: 100;
-            border-color: #fff;
-        }
-
-        .carousel-item.zoomed img {
-            transform: scale(2.2); /* تكبير قوي للصور */
-            box-shadow: 0 0 30px rgba(255, 255, 255, 0.9);
-            border: 3px solid white;
-        }
-
-        .overlay {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.7);
-            z-index: 4;
-            display: none;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-        .overlay.active {
-            display: block;
-            opacity: 1;
+            display: block; /* منع الفراغات السفلية للصور */
         }
 
         @keyframes rotateGallery {
@@ -160,9 +135,49 @@
             to { transform: rotateY(360deg); }
         }
 
+        /* =========================================
+           نظام Lightbox الجديد لعرض الصور بدون تشوه
+           ========================================= */
+        .lightbox {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.85);
+            backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
+            z-index: 9999;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .lightbox.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .lightbox img {
+            max-width: 90%;
+            max-height: 80vh;
+            border-radius: 10px;
+            border: 3px solid #fff;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.5);
+            transform: scale(0.8);
+            transition: transform 0.3s ease;
+        }
+
+        .lightbox.active img {
+            transform: scale(1);
+        }
+
+        /* ========================================= */
+
         .message-box {
             background: rgba(255, 255, 255, 0.1);
             backdrop-filter: blur(5px);
+            -webkit-backdrop-filter: blur(5px);
             border: 2px solid var(--gold);
             padding: 20px;
             border-radius: 15px;
@@ -174,7 +189,7 @@
         }
 
         .balloon {
-            position: absolute;
+            position: fixed; /* استخدام fixed بدل absolute لتجنب تمدد الصفحة */
             bottom: -100px;
             width: 35px;
             height: 45px;
@@ -200,9 +215,6 @@
             100% { transform: translate3d(0, -120vh, 0) rotate(15deg); }
         }
 
-        /* =========================================
-           شاشات الموبايل المتجاوبة
-           ========================================= */
         @media (max-width: 768px) {
             h1 { font-size: 2.2rem; }
             h2 { font-size: 1.1rem; }
@@ -211,15 +223,11 @@
             .gallery-container {
                 height: 45vh;
                 margin: 40px auto;
-                perspective: 1000px; /* جعل المنظور أعمق لتناسب الصور الكثيرة */
+                perspective: 1200px;
             }
             .carousel {
-                width: 90px; /* تصغير العرض ليناسب الشاشة مع كثرة الصور */
+                width: 90px;
                 height: 140px;
-            }
-
-            .carousel-item.zoomed img {
-                transform: scale(2.8); /* تكبير ضخم جداً على الموبايل لتملأ الشاشة */
             }
 
             .message-box {
@@ -232,7 +240,10 @@
 </head>
 <body>
 
-    <div class="overlay" id="overlay"></div>
+    <!-- نافذة عرض الصور المستقلة (Lightbox) -->
+    <div class="lightbox" id="lightbox">
+        <img id="lightbox-img" src="" alt="صورة مكبرة">
+    </div>
 
     <audio id="birthdayAudio" loop>
         <source src="audio/song001.mp3" type="audio/mpeg">
@@ -246,7 +257,7 @@
 
     <div class="gallery-container">
         <div class="carousel" id="carousel">
-            <!-- الـ 25 صورة -->
+            <!-- 25 صورة -->
             <div class="carousel-item"><img src="img/img001.jpg" alt="صورة"></div>
             <div class="carousel-item"><img src="img/img002.jpg" alt="صورة"></div>
             <div class="carousel-item"><img src="img/img003.jpg" alt="صورة"></div>
@@ -281,16 +292,15 @@
     </div>
 
     <script>
-        // --- 1. بناء دائرة الصور برمجياً (Dynamic 3D Carousel) ---
+        // --- 1. بناء دائرة الصور (مؤجل حتى يكتمل تحميل الصفحة لمنع الأخطاء) ---
         function setupCarousel() {
             const carousel = document.getElementById('carousel');
             const items = document.querySelectorAll('.carousel-item');
-            const itemCount = items.length; // 25 صورة
-            const angle = 360 / itemCount; // حساب الزاوية بدقة
+            const itemCount = items.length; 
+            const angle = 360 / itemCount; 
             
-            // حساب المسافة المركزية (Radius) بناءً على عرض الصورة في الموبايل والكمبيوتر
-            const itemWidth = carousel.offsetWidth; 
-            // معادلة رياضية لحساب قطر الدائرة بناءً على عدد الصور وحجمها
+            // إضافة عرض احتياطي في حال تأخر السيرفر في جلب حجم العنصر
+            const itemWidth = carousel.offsetWidth || (window.innerWidth <= 768 ? 90 : 130); 
             const radius = Math.round( (itemWidth / 2) / Math.tan(Math.PI / itemCount) ) + 20; 
 
             items.forEach((item, index) => {
@@ -298,55 +308,45 @@
             });
         }
 
-        // تشغيل بناء المعرض عند فتح الموقع، وعند تدوير شاشة الموبايل
-        setupCarousel();
-        window.addEventListener('resize', setupCarousel);
-
-        // --- 2. برمجة تكبير الصور (Zoom) عند الضغط ---
+        // --- 2. نظام الـ Lightbox المحدث لعرض الصور ---
         const items = document.querySelectorAll('.carousel-item');
         const carousel = document.getElementById('carousel');
-        const overlay = document.getElementById('overlay');
-
-        function closeAllImages() {
-            items.forEach(i => i.classList.remove('zoomed'));
-            overlay.classList.remove('active');
-            carousel.style.animationPlayState = 'running'; // إعادة الدوران
-        }
+        const lightbox = document.getElementById('lightbox');
+        const lightboxImg = document.getElementById('lightbox-img');
 
         items.forEach(item => {
             item.addEventListener('click', function(e) {
                 e.stopPropagation(); 
-                if (this.classList.contains('zoomed')) {
-                    closeAllImages();
-                } else {
-                    closeAllImages();
-                    this.classList.add('zoomed');
-                    overlay.classList.add('active');
-                    carousel.style.animationPlayState = 'paused'; // إيقاف الدوران للرؤية بوضوح
-                }
+                // أخذ مصدر الصورة من العنصر المضغوط
+                const imgSrc = this.querySelector('img').src;
+                lightboxImg.src = imgSrc;
+                lightbox.classList.add('active');
+                carousel.style.animationPlayState = 'paused'; // إيقاف الدوران
             });
         });
 
-        document.body.addEventListener('click', function(e) {
-            if (!e.target.closest('.carousel-item')) {
-                closeAllImages();
-            }
+        // إغلاق الصورة عند الضغط في أي مكان
+        lightbox.addEventListener('click', function() {
+            lightbox.classList.remove('active');
+            carousel.style.animationPlayState = 'running'; // استكمال الدوران
         });
 
 
         // --- 3. البالونات ---
-        const isMobile = window.innerWidth <= 768;
-        const balloonCount = isMobile ? 6 : 12; 
-        const colors = ['#ff4b4b', '#4bafff', '#ffcc00', '#ff4be6', '#4bff88'];
+        function createBalloons() {
+            const isMobile = window.innerWidth <= 768;
+            const balloonCount = isMobile ? 6 : 12; 
+            const colors = ['#ff4b4b', '#4bafff', '#ffcc00', '#ff4be6', '#4bff88'];
 
-        for(let i=0; i < balloonCount; i++) {
-            let balloon = document.createElement('div');
-            balloon.className = 'balloon';
-            balloon.style.background = colors[Math.floor(Math.random() * colors.length)];
-            balloon.style.left = (Math.random() * 90) + 'vw'; 
-            balloon.style.animationDuration = (Math.random() * 6 + 8) + 's';
-            balloon.style.animationDelay = Math.random() * 5 + 's';
-            document.body.appendChild(balloon);
+            for(let i=0; i < balloonCount; i++) {
+                let balloon = document.createElement('div');
+                balloon.className = 'balloon';
+                balloon.style.background = colors[Math.floor(Math.random() * colors.length)];
+                balloon.style.left = (Math.random() * 90) + 'vw'; 
+                balloon.style.animationDuration = (Math.random() * 6 + 8) + 's';
+                balloon.style.animationDelay = Math.random() * 5 + 's';
+                document.body.appendChild(balloon);
+            }
         }
 
         // --- 4. تشغيل الصوت والقصاصات ---
@@ -359,7 +359,7 @@
                 audio.pause();
                 playBtn.innerHTML = "🎶 تشغيل الموسيقى 🎶";
             } else {
-                audio.play();
+                audio.play().catch(e => console.log("المتصفح يمنع التشغيل التلقائي"));
                 playBtn.innerHTML = "⏸ إيقاف الموسيقى";
                 fireConfetti();
             }
@@ -367,6 +367,7 @@
         }
 
         function fireConfetti() {
+            const isMobile = window.innerWidth <= 768;
             var duration = 3 * 1000;
             var animationEnd = Date.now() + duration;
             var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
@@ -386,9 +387,15 @@
             }, 250);
         }
 
-        window.onload = function() {
+        // --- 5. تشغيل الأكواد "بعد" تحميل كامل الصفحة لتجنب الأخطاء على السيرفر ---
+        window.addEventListener('load', function() {
+            setupCarousel();
+            createBalloons();
             setTimeout(fireConfetti, 500);
-        }
+        });
+
+        // إعادة ضبط المقاسات عند تدوير شاشة الموبايل
+        window.addEventListener('resize', setupCarousel);
     </script>
 </body>
 </html>
